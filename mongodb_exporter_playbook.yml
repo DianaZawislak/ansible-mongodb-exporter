@@ -7,7 +7,7 @@
     mongodb_port: 27018
     mongodb_exporter_port: 9216
     monitoring_user: monitoringUser
-    monitoring_password: "XZ536Qm9XRxs"
+    monitoring_password: "sensitivepassword"
 
   tasks:
     - name: Download MongoDB exporter
