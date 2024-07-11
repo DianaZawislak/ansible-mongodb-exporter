@@ -1,0 +1,69 @@
+---
+- name: Install and Configure MongoDB Exporter
+  hosts: mongodb_servers
+  become: yes
+  vars:
+    mongodb_exporter_version: "0.20.7"
+    mongodb_port: 27018
+    mongodb_exporter_port: 9216
+    monitoring_user: monitoringUser
+    monitoring_password: "XZ536Qm9XRxs"
+
+  tasks:
+    - name: Download MongoDB exporter
+      get_url:
+        url: "https://github.com/percona/mongodb_exporter/releases/download/v{{ mongodb_exporter_version }}/mongodb_exporter-{{ mongodb_exporter_version }}.linux-amd64.tar.gz"
+        dest: "/tmp/mongodb_exporter-{{ mongodb_exporter_version }}.linux-amd64.tar.gz"
+
+    - name: Create MongoDB exporter directory
+      file:
+        path: /opt/mongodb_exporter
+        state: directory
+      check_mode: false
+
+    - name: Extract MongoDB exporter
+      unarchive:
+        src: "/tmp/mongodb_exporter-{{ mongodb_exporter_version }}.linux-amd64.tar.gz"
+        dest: /opt/mongodb_exporter
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+      when: not ansible_check_mode
+
+    - name: Create systemd service file
+      template:
+        src: mongodb_exporter.service.j2
+        dest: /etc/systemd/system/mongodb_exporter.service
+      notify:
+        - Reload systemd
+        - Restart MongoDB exporter
+
+    - name: Open firewall port for MongoDB exporter
+      firewalld:
+        port: "{{ mongodb_exporter_port }}/tcp"
+        permanent: yes
+        state: enabled
+      notify:
+        - Reload firewall
+
+    - name: Ensure MongoDB exporter service is enabled and started
+      systemd:
+        name: mongodb_exporter
+        state: started
+        enabled: yes
+      when: not ansible_check_mode
+
+  handlers:
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+      when: not ansible_check_mode
+
+    - name: Restart MongoDB exporter
+      systemd:
+        name: mongodb_exporter
+        state: restarted
+      when: not ansible_check_mode
+
+    - name: Reload firewall
+      command: firewall-cmd --reload
+      when: not ansible_check_mode

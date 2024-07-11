@@ -1,0 +1,11 @@
+[Unit]
+Description=MongoDB exporter
+After=network.target mongod-shard.service
+
+[Service]
+User=root
+ExecStart=/opt/mongodb_exporter/mongodb_exporter --mongodb.uri=mongodb://{{ monitoring_user }}:{{ monitoring_password }}@localhost:{{ mongodb_port }}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
