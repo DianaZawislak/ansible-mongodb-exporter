@@ -1,10 +1,11 @@
 [Unit]
 Description=MongoDB exporter
-After=network.target mongod-shard.service
+After=network.target
 
 [Service]
+LimitNOFILE=65535
 User=root
-ExecStart=/opt/mongodb_exporter/mongodb_exporter --mongodb.uri=mongodb://{{ monitoring_user }}:{{ monitoring_password }}@localhost:{{ mongodb_port }}
+ExecStart=/opt/mongodb_exporter/mongodb_exporter --mongodb.uri={{ mongodb_uri }}
 Restart=always
 
 [Install]

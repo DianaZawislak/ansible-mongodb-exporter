@@ -7,7 +7,9 @@
     mongodb_port: 27018
     mongodb_exporter_port: 9216
     monitoring_user: monitoringUser
-    monitoring_password: "sensitivepassword"
+    monitoring_password: "{{ mongodb_password | default(lookup('env', 'MONGODB_MONITORING_PASSWORD')) }}"
+    mongodb_uri: "mongodb://{{ monitoring_user }}:{{ monitoring_password }}@localhost:27018"
+    
 
   tasks:
     - name: Download MongoDB exporter
@@ -51,6 +53,10 @@
         state: started
         enabled: yes
       when: not ansible_check_mode
+
+    - name: Debug password
+      debug:
+        var: lookup('env', 'MONGODB_MONITORING_PASSWORD')
 
   handlers:
     - name: Reload systemd
