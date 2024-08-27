@@ -1,6 +1,5 @@
 # Ansible Playbook for MongoDB and Node Exporter Installation on Rocky Linux
 
-![Views](https://hits.dwyl.com/DianaZawislak/ansible-mongodb-exporter.svg?style=flat-square)
 ![Rocky Linux](https://img.shields.io/badge/Rocky%20Linux-8.x-green?style=flat-square)
 ![YAML](https://img.shields.io/badge/YAML-2.1-blue?style=flat-square)
 ![Ansible](https://img.shields.io/badge/Ansible-5.x-orange?style=flat-square)
